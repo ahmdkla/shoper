@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en" data-theme="leather">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Shoper — leather and denim first apparel. Built to be worn in, not worn out." />
+    <meta name="theme-color" content="#FAF7F2" />
+    <title>Shoper — Leather & Denim First</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      // Applied before paint so the chosen theme never flashes.
+      // ?theme=denim wins over the stored value, so a link can carry a
+      // specific theme (useful for sharing a look, and for QA).
+      try {
+        var params = new URLSearchParams(location.search)
+
+        // These preferences are plain strings. An earlier build wrote them
+        // JSON-encoded, so a stored value can arrive as "on" complete with
+        // quotes — which matches nothing below and silently drops the
+        // preference. Unwrap and rewrite it so old visitors self-heal.
+        function pref(key) {
+          var v = localStorage.getItem(key)
+          if (!v) return null
+          if (v.charAt(0) === '"') {
+            try {
+              v = JSON.parse(v)
+              localStorage.setItem(key, v)
+            } catch (e) {
+              return null
+            }
+          }
+          return v
+        }
+
+        var q = params.get('theme')
+        var t = q || pref('shoper.theme')
+        if (t === 'leather' || t === 'denim') {
+          document.documentElement.setAttribute('data-theme', t)
+          if (q) localStorage.setItem('shoper.theme', t)
+        }
+
+        // Motion: the storefront animates by default. Visitors can switch it
+        // to Off, or to Auto to follow their operating system. Applied before
+        // paint so nothing animates for a frame and then stops.
+        var mq = params.get('motion')
+        var m = mq || pref('shoper.motion') || 'on'
+        if (m === 'on' || m === 'off') {
+          document.documentElement.setAttribute('data-motion', m)
+        }
+        // 'auto' deliberately leaves the attribute off, so the CSS falls
+        // through to the prefers-reduced-motion media query.
+        if (mq === 'on' || mq === 'off' || mq === 'auto') {
+          localStorage.setItem('shoper.motion', mq)
+        }
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
